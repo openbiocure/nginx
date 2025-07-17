@@ -21,6 +21,13 @@ help:
 	@echo "  install-docker - Install Docker on AlmaLinux (server only)"
 	@echo "  deploy       - Full deployment (build + up + health check)"
 	@echo ""
+	@echo "🔧 Maintenance Mode:"
+	@echo "  maintenance-on  - Enable maintenance mode (takes site down)"
+	@echo "  maintenance-off - Disable maintenance mode (brings site up)"
+	@echo ""
+	@echo "📊 Status & Monitoring:"
+	@echo "  status       - Show container status and health"
+	@echo ""
 
 # Build the container
 build:
@@ -105,13 +112,19 @@ dev-reload: reload
 # Maintenance mode helpers
 maintenance-on:
 	@echo "🔧 Enabling maintenance mode..."
-	@echo "⚠️  Edit conf.d/default.conf and uncomment maintenance location block"
-	@echo "   Then run: make reload"
+	@if [ -f conf.d/default.conf ]; then mv conf.d/default.conf conf.d/default.conf.production; fi
+	@if [ -f conf.d/default.conf.maintenance ]; then mv conf.d/default.conf.maintenance conf.d/default.conf; fi
+	@echo "🔄 Reloading nginx configuration..."
+	@docker-compose exec nginx nginx -s reload
+	@echo "✅ Maintenance mode enabled!"
 
 maintenance-off:
 	@echo "🔧 Disabling maintenance mode..."
-	@echo "⚠️  Edit conf.d/default.conf and comment out maintenance location block"
-	@echo "   Then run: make reload"
+	@if [ -f conf.d/default.conf ]; then mv conf.d/default.conf conf.d/default.conf.maintenance; fi
+	@if [ -f conf.d/default.conf.production ]; then mv conf.d/default.conf.production conf.d/default.conf; fi
+	@echo "🔄 Reloading nginx configuration..."
+	@docker-compose exec nginx nginx -s reload
+	@echo "✅ Maintenance mode disabled!"
 
 # Status check
 status:
