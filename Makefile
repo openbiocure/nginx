@@ -135,4 +135,4 @@ status:
 	@docker-compose exec nginx nginx -t 2>/dev/null || echo "Container not running"
 	@echo ""
 	@echo "🏥 Health check:"
-	@curl -f http://localhost/health > /dev/null 2>&1 && echo "✅ Healthy" || echo "❌ Unhealthy" 
+	@curl -f http://localhost/health > /dev/null 2>&1 && echo "✅ Healthy" || echo "❌ Unhealthy"
